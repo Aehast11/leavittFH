@@ -123,3 +123,9 @@ nav a:hover {
 .photo-strip-img.is-active {
   opacity: 1;
 }
+
+.credits{
+  font-size:10px;
+  text-decoration: none;
+  color: #062e12;
+}.
