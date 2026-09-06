@@ -1,21 +1,147 @@
+let upcoming = null;
+
+function toIcsDate(date) {
+  return date.toISOString().replace(/-|:|\.\d\d\d/g, '');
+}
+
+function buildEventDetails() {
+  const title = `Leavitt Field Hockey ${upcoming.location === 'Away' ? '@' : 'vs.'} ${upcoming.opponent}`;
+  const description = `Leavitt Area High School Field Hockey match at ${upcoming.location}.`;
+  const start = upcoming.dateObj;
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  return { title, description, start, end };
+}
+
+function buildGoogleCalendarUrl() {
+  const { title, description, start, end } = buildEventDetails();
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toIcsDate(start)}/${toIcsDate(end)}`,
+    details: description,
+    location: upcoming.location
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function downloadIcs() {
+  const { title, description, start, end } = buildEventDetails();
+
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${description}`,
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = `Leavitt-FH-vs-${upcoming.opponent}.ics`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(link.href);
+}
+
+function closeCalendarMenu() {
+  const menu = document.getElementById('calendar-menu');
+  if (menu) menu.hidden = true;
+}
+
+function initCalendarButton() {
+  const calendarBtn = document.getElementById('calendar-btn');
+  const calendarMenu = document.getElementById('calendar-menu');
+  const googleLink = document.getElementById('google-cal-link');
+  const icsBtn = document.getElementById('ics-cal-btn');
+
+  if (!calendarBtn || !calendarMenu || !googleLink || !icsBtn) return;
+
+  calendarBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (!upcoming) return;
+
+    const wantsToAdd = window.confirm('Do you want to add this event to your calendar?');
+    if (!wantsToAdd) return;
+
+    googleLink.href = buildGoogleCalendarUrl();
+    calendarMenu.hidden = false;
+  });
+
+  icsBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    downloadIcs();
+    closeCalendarMenu();
+  });
+
+  googleLink.addEventListener('click', () => {
+    closeCalendarMenu();
+  });
+
+  calendarMenu.addEventListener('click', (event) => event.stopPropagation());
+  document.addEventListener('click', closeCalendarMenu);
+}
+
+function initRemindButton() {
+  const remindBtn = document.getElementById('remind-btn');
+  if (!remindBtn) return;
+
+  remindBtn.addEventListener('click', () => {
+    if (!upcoming) return;
+
+    const { title, description } = buildEventDetails();
+    const shareData = {
+      title,
+      text: description,
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+      return;
+    }
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(`${shareData.title} — ${shareData.text} (${shareData.url})`)
+        .then(() => {
+          alert('Game details copied to clipboard! Paste them into your notes or reminders app.');
+        })
+        .catch(() => {
+          alert(`Reminder: ${shareData.title}`);
+        });
+      return;
+    }
+
+    alert(`Reminder: ${shareData.title}`);
+  });
+}
+
 fetch('games.json')
   .then(res => res.json())
   .then(games => {
     const now = new Date();
 
-    const upcoming = games
+    upcoming = games
       .map(g => ({ ...g, dateObj: new Date(g.date) }))
       .filter(g => g.dateObj > now)
       .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime())[0];
 
     const opponentEl = document.querySelector('.next-game h2');
     const metaEl = document.querySelector('.next-game .game-meta');
+    const iconsWrap = document.querySelector('.game-icons');
 
     if (!opponentEl || !metaEl) return;
 
     if (!upcoming) {
       opponentEl.textContent = 'Season complete';
       metaEl.textContent = 'Check back next fall';
+      if (iconsWrap) iconsWrap.style.display = 'none';
       return;
     }
 
@@ -28,65 +154,10 @@ fetch('games.json')
       upcoming.dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) +
       ' \u00b7 ' +
       upcoming.location;
+
+    initCalendarButton();
+    initRemindButton();
   })
   .catch(() => {
     console.error('Could not load games.json — check the file is in the same folder as index.html');
   });
-
-  // 
-  //
-  //
-
-
-const remindBtn = document.getElementById('remind-btn');
-const calendarBtn = document.getElementById('calendar-btn');
-
-remindBtn.addEventListener('click', () => {
-  const shareData = {
-    title: 'Leavitt Field Hockey vs. ' + upcoming.opponent,
-    text: `Upcoming game vs ${upcoming.opponent} on ${upcoming.dateObj.toLocaleString()} at ${upcoming.location}.`,
-    url: window.location.href,
-  };
-
-  if (navigator.share) {
-   
-    navigator.share(shareData).catch((err) => console.log('Share dismissed', err));
-  } else {
-
-    navigator.clipboard.writeText(`${shareData.title} — ${shareData.text} (${shareData.url})`)
-      .then(() => {
-        alert('Game details copied to clipboard! Paste them into your notes or reminders.');
-      })
-      .catch(() => {
-        alert(`Reminder: ${shareData.title} on ${upcoming.dateObj.toLocaleString()}`);
-      });
-  }
-});
-
-calendarBtn.addEventListener('click', () => {
-  const title = `Leavitt Field Hockey vs. ${upcoming.opponent}`;
-  const startDate = upcoming.dateObj.toISOString().replace(/-|:|\.\d+/g, '');
-
-  const endDate = new Date(upcoming.dateObj.getTime() + 2 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d+/g, '');
-  const description = `Leavitt Area High School Field Hockey match at ${upcoming.location}.`;
-
-  const icsContent = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'BEGIN:VEVENT',
-    `SUMMARY:${title}`,
-    `DESCRIPTION:${description}`,
-    `DTSTART:${startDate}`,
-    `DTEND:${endDate}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\n');
-
-  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = window.URL.createObjectURL(blob);
-  link.download = `Leavitt-FH-vs-${upcoming.opponent}.ics`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
