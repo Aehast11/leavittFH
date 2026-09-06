@@ -307,6 +307,156 @@ footer {
   background-image: url('https://cdn-icons-png.flaticon.com/512/1827/1827347.png');
 }
 
+.calendar-wrap {
+  position: relative;
+}
+
+.calendar-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 190px;
+  background-color: #022109;
+  border: 1px solid rgba(245, 197, 24, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.calendar-menu[hidden] {
+  display: none;
+}
+
+.calendar-menu-option {
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  color: #eef0e8;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.calendar-menu-option:hover,
+.calendar-menu-option:focus-visible {
+  background-color: rgba(245, 197, 24, 0.18);
+}
+
+.calendar-menu-option + .calendar-menu-option {
+  border-top: 1px solid rgba(245, 197, 24, 0.15);
+}
+
+.recent-results {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto 48px;
+  color: #eef0e8;
+}
+
+.recent-results h2 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  color: #f5c518;
+  margin-bottom: 12px;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #3b5a41;
+  border-radius: 8px;
+}
+
+.result-row.win {
+  border-left-color: #4caf50;
+}
+
+.result-row.loss {
+  border-left-color: #e15656;
+}
+
+.result-row.tie {
+  border-left-color: #f5c518;
+}
+
+.result-opponent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.result-opponent .vs-line {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.result-opponent .result-date {
+  font-size: 12px;
+  color: #a7bfa9;
+  letter-spacing: 0.5px;
+}
+
+.result-score {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.result-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.result-row.win .result-badge {
+  background: rgba(76, 175, 80, 0.25);
+  color: #8ee093;
+}
+
+.result-row.loss .result-badge {
+  background: rgba(225, 86, 86, 0.25);
+  color: #ffb3b3;
+}
+
+.result-row.tie .result-badge {
+  background: rgba(245, 197, 24, 0.25);
+  color: #f5c518;
+}
+
+.result-score-value {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.results-empty {
+  color: #a7bfa9;
+  font-size: 14px;
+  padding: 8px 2px;
+}
+
 @media (max-width: 520px) {
   .footer-content {
     gap: 16px;
@@ -317,12 +467,35 @@ footer {
   }
 
   .next-game {
-    align-items: flex-start;
-    padding: 24px;
+    align-items: center;
+    padding: 20px;
+    flex-wrap: wrap;
+    row-gap: 16px;
   }
 
   .game-icons {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 14px;
+    margin-left: auto;
+  }
+
+  .icons {
+    width: 76px;
+    height: 76px;
+  }
+
+  .icons::before {
+    inset: 12px;
+  }
+
+  .calendar-menu {
+    right: auto;
+    left: 0;
+    min-width: 220px;
+  }
+
+  .result-row {
+    flex-wrap: wrap;
   }
 }
 
