@@ -32,8 +32,14 @@
   </div>
 
   <div class="game-icons">
-    <button class="icons"></button>
-    <button class="icons bell-icon"></button>
+    <div class="calendar-wrap">
+      <button class="icons" id="calendar-btn" type="button" aria-label="Add to calendar" title="Add to calendar"></button>
+      <div class="calendar-menu" id="calendar-menu" hidden>
+        <a class="calendar-menu-option" id="google-cal-link" href="#" target="_blank" rel="noopener">Google Calendar</a>
+        <button class="calendar-menu-option" id="ics-cal-btn" type="button">Apple / Outlook (.ics)</button>
+      </div>
+    </div>
+    <button class="icons bell-icon" id="remind-btn" type="button" aria-label="Save reminder" title="Save reminder"></button>
   </div>
 
 </section>
@@ -41,9 +47,14 @@
 <section class="photo-strip">
 </section>
 
+<section class="recent-results">
+  <h2>Recent Results</h2>
+  <div class="results-list"></div>
+</section>
 
 <script src="next-game.js"></script>
 <script src="photo-strip.js"></script>
+<script src="recent-results.js"></script>
 
 <footer>
   <div class="footer-content">
@@ -72,4 +83,3 @@
 </html>
 
 <!-- work of aehast11 -->
-
