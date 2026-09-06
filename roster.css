@@ -153,71 +153,61 @@ body {
 
 @media (max-width: 660px) {
   body {
-    padding: 16px 8px;
+    padding: 20px 12px;
   }
 
   .roster-grid {
-    grid-template-columns: repeat(4, 80px);
-    gap: 10px 8px;
+    grid-template-columns: repeat(3, 100px);
+    gap: 14px 12px;
   }
 
   .player-card {
-    width: 80px;
-    height: 160px;
-    border-width: 2px;
-    border-radius: 8px;
+    width: 100px;
+    height: 200px;
   }
 
   .player-card::before,
   .player-card::after {
-    width: 42px;
-    height: 42px;
+    width: 54px;
+    height: 54px;
   }
 
   .top-left-text {
-    top: 3px;
-    left: 4px;
-    font-size: 13px;
+    top: 4px;
+    left: 5px;
+    font-size: 16px;
   }
 
   .bottom-right-text {
-    right: 2px;
-    bottom: 3px;
-    width: 36px;
-    max-width: 36px;
+    right: 3px;
+    bottom: 4px;
+    width: 46px;
+    max-width: 46px;
+    font-size: 8px;
   }
 
   .bottom-right-text h2 {
-    font-size: 6.5px;
+    font-size: 8px;
   }
 
   .bottom-right-text p {
-    font-size: 5.5px;
+    font-size: 7px;
     margin-top: 1px;
   }
 
+
+  .player-card:last-child {
+    grid-column: 2 / 3;
+  }
+
   .roster-header a {
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 12px 16px;
+    font-size: 15px;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 440px) {
   .roster-grid {
-    grid-template-columns: repeat(4, 72px);
-    gap: 8px 6px;
-  }
-
-  .player-card {
-    width: 72px;
-    height: 144px;
-  }
-  
-  .bottom-right-text h2 {
-    font-size: 6px;
-  }
-
-  .bottom-right-text p {
-    font-size: 5px;
+    grid-template-columns: repeat(2, 100px);
   }
 }
